@@ -25,12 +25,20 @@ public class MainActivity extends AppCompatActivity {
 
                 String time = timeEditText.getText().toString();
                 String[] times = time.split(":");
-                int hours = Integer.parseInt(times[0]);
-                int minutes = Integer.parseInt(times[1]);
+                int hours = Integer.parseInt(times[0]) * 3600;
+                int minutes = Integer.parseInt(times[1]) * 60;
                 int seconds = Integer.parseInt(times[2]);
+                int totalSeconds = hours + minutes + seconds;
 
+                float distance = Float.parseFloat(distanceNumEditText.getText().toString());
 
-                float num2 = Float.parseFloat(distanceNumEditText.getText().toString());
+                float secondsPerDistance = totalSeconds / distance;
+
+                int paceMinutes = (int)secondsPerDistance / 60;
+                int paceSeconds = (int)secondsPerDistance % 60;
+                String pace = paceMinutes + ":" + paceSeconds;
+
+                resultTextView.setText(pace);
             }
         });
     }
