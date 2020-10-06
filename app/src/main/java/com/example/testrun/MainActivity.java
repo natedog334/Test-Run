@@ -8,23 +8,42 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+
+    enum Units {
+        MILES("mi"),
+        METERS("m"),
+        KILOMETERS("km");
+
+        private String abbreviation;
+
+        Units(String abbreviation) {
+            this.abbreviation = abbreviation;
+        }
+
+        public String getAbbreviation() {
+            return this.abbreviation;
+        }
+    }
+
+    Units units;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // set up unit spinner
         Spinner unitSpinner = findViewById(R.id.unitSpinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.units, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         unitSpinner.setAdapter(adapter);
         unitSpinner.setOnItemSelectedListener(this);
 
+        // do pace calculation when button is pressed
         Button addButton = (Button) findViewById(R.id.calcButton);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -39,10 +58,27 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 float distance = Float.parseFloat(distanceNumEditText.getText().toString());
 
                 String pace = calculatePace(times, distance);
+                pace = pace + " " + "min/" + units.getAbbreviation();
 
                 resultTextView.setText(pace);
             }
         });
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        if(position == 0) { // miles
+            this.units = Units.MILES;
+        } else if(position == 1) { // meters
+            this.units = Units.METERS;
+        } else if(position == 2) { // kilometers
+            this.units = Units.KILOMETERS;
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        this.units = Units.MILES;
     }
 
     String calculatePace(String[] times, float distance) {
@@ -55,18 +91,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         int paceMinutes = (int)secondsPerDistance / 60;
         int paceSeconds = (int)secondsPerDistance % 60;
-        return paceMinutes + ":" + paceSeconds;
-    }
-
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        String text = parent.getItemAtPosition(position).toString();
-        Toast.makeText(parent.getContext(), text, Toast.LENGTH_SHORT);
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
+        String paceSecondsFormatted = String.format("%02d", paceSeconds);
+        return paceMinutes + ":" + paceSecondsFormatted;
     }
 }
