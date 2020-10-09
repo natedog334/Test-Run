@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Test Run</string>
 
-    <string-array name="units" >
+    <string-array name="units">
         <item>mi</item>
         <item>m</item>
         <item>km</item>
